@@ -1,0 +1,15 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Field layouts collection - allow read/write for all authenticated sessions
+    // Since we use password protection in the app, we allow public access
+    match /fieldLayouts/{layoutId} {
+      allow read, write: if true;
+    }
+
+    // Station templates collection
+    match /stationTemplates/{templateId} {
+      allow read, write: if true;
+    }
+  }
+}

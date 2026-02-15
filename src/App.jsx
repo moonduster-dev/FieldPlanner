@@ -7,8 +7,7 @@ import ExportModal from './components/modals/ExportModal';
 import StationModal from './components/modals/StationModal';
 import NoteModal from './components/modals/NoteModal';
 import ContextMenu from './components/ui/ContextMenu';
-import { useFieldItems } from './hooks/useFieldItems';
-import { useAutoSave } from './hooks/useLocalStorage';
+import { useFirestoreSync } from './hooks/useFirestoreSync';
 import { useStationTemplates } from './hooks/useStationTemplates';
 import { CANVAS } from './constants/fieldDimensions';
 
@@ -18,20 +17,19 @@ function App() {
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
 
-  // Field items state
+  // Field items state with Firestore sync
   const {
     items,
     isLoaded,
+    isSyncing,
+    error: syncError,
     addItem,
     updateItem,
     moveItem,
     removeItem,
     clearAll,
     loadItems,
-  } = useFieldItems();
-
-  // Auto-save to localStorage
-  useAutoSave(items, 1000);
+  } = useFirestoreSync('default');
 
   // Station templates
   const {
@@ -266,6 +264,8 @@ function App() {
         onDeleteTemplate={deleteTemplate}
         onEditTemplate={handleEditTemplate}
         onCreateNote={handleCreateNote}
+        isSyncing={isSyncing}
+        syncError={syncError}
       />
 
       {/* Main canvas area */}
