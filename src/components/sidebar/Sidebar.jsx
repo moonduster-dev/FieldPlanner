@@ -1,7 +1,6 @@
 import { useRef } from 'react';
 import LibrarySection from './LibrarySection';
 import CoachLibrary from './CoachLibrary';
-import EquipmentLibrary from './EquipmentLibrary';
 import AssetLibrary from './AssetLibrary';
 import StationLibrary from './StationLibrary';
 import NoteLibrary from './NoteLibrary';
@@ -131,10 +130,6 @@ const Sidebar = ({
 
         <LibrarySection title="Coaches" defaultOpen={true}>
           <CoachLibrary />
-        </LibrarySection>
-
-        <LibrarySection title="Equipment" defaultOpen={true}>
-          <EquipmentLibrary />
         </LibrarySection>
 
         <LibrarySection title="Field Assets" defaultOpen={true}>
