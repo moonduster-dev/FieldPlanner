@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { seedStationTemplates } from '../data/seedStationTemplates';
 
 const STORAGE_KEY = 'fieldPlanner_stationTemplates';
 
@@ -14,15 +15,28 @@ export const useStationTemplates = () => {
   const [templates, setTemplates] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Load templates from localStorage on mount
+  // Load templates from localStorage on mount, fall back to seed data
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
-        setTemplates(JSON.parse(saved));
+        const parsedTemplates = JSON.parse(saved);
+        if (parsedTemplates.length > 0) {
+          setTemplates(parsedTemplates);
+        } else {
+          // No saved templates, use seed data
+          setTemplates(seedStationTemplates);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(seedStationTemplates));
+        }
+      } else {
+        // No localStorage data, use seed data
+        setTemplates(seedStationTemplates);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(seedStationTemplates));
       }
     } catch (error) {
       console.error('Failed to load station templates:', error);
+      // On error, use seed data
+      setTemplates(seedStationTemplates);
     }
     setIsLoaded(true);
   }, []);
