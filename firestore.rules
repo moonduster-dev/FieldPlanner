@@ -11,5 +11,10 @@ service cloud.firestore {
     match /stationTemplates/{templateId} {
       allow read, write: if true;
     }
+
+    // App settings collection (logo, etc.)
+    match /fieldSettings/{settingsId} {
+      allow read, write: if true;
+    }
   }
 }

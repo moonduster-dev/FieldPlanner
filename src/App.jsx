@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import PasswordGate from './components/auth/PasswordGate';
 import Sidebar from './components/sidebar/Sidebar';
 import FieldCanvas from './components/canvas/FieldCanvas';
@@ -8,10 +8,9 @@ import StationModal from './components/modals/StationModal';
 import NoteModal from './components/modals/NoteModal';
 import ContextMenu from './components/ui/ContextMenu';
 import { useFirestoreSync } from './hooks/useFirestoreSync';
+import { useFirestoreSettings } from './hooks/useFirestoreSettings';
 import { useStationTemplates } from './hooks/useStationTemplates';
 import { CANVAS } from './constants/fieldDimensions';
-
-const LOGO_STORAGE_KEY = 'fieldPlanner_logo';
 
 function App() {
   const containerRef = useRef(null);
@@ -39,26 +38,17 @@ function App() {
     updateTemplate,
   } = useStationTemplates();
 
-  // Logo state
-  const [logoUrl, setLogoUrl] = useState(null);
-
-  // Load logo from localStorage on mount
-  useEffect(() => {
-    const savedLogo = localStorage.getItem(LOGO_STORAGE_KEY);
-    if (savedLogo) {
-      setLogoUrl(savedLogo);
-    }
-  }, []);
+  // Settings with Firestore sync (logo, etc.)
+  const {
+    logoUrl,
+    setLogoUrl,
+    isSyncing: isSettingsSyncing,
+  } = useFirestoreSettings('default');
 
   // Handle logo change
   const handleLogoChange = useCallback((newLogoUrl) => {
     setLogoUrl(newLogoUrl);
-    if (newLogoUrl) {
-      localStorage.setItem(LOGO_STORAGE_KEY, newLogoUrl);
-    } else {
-      localStorage.removeItem(LOGO_STORAGE_KEY);
-    }
-  }, []);
+  }, [setLogoUrl]);
 
   // Modal states
   const [showExportModal, setShowExportModal] = useState(false);
@@ -264,7 +254,7 @@ function App() {
         onDeleteTemplate={deleteTemplate}
         onEditTemplate={handleEditTemplate}
         onCreateNote={handleCreateNote}
-        isSyncing={isSyncing}
+        isSyncing={isSyncing || isSettingsSyncing}
         syncError={syncError}
       />
 
