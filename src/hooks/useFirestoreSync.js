@@ -7,6 +7,7 @@ import {
   serverTimestamp
 } from 'firebase/firestore';
 import { db } from '../firebase/config';
+import { seedItems } from '../data/seedData';
 
 const COLLECTION_NAME = 'fieldLayouts';
 const LOCAL_STORAGE_KEY = 'fieldPlanner_items';
@@ -22,15 +23,28 @@ export const useFirestoreSync = (layoutId = 'default') => {
   const [isSyncing, setIsSyncing] = useState(false);
   const [error, setError] = useState(null);
 
-  // Load from localStorage first (for offline support)
+  // Load from localStorage first (for offline support), fall back to seed data
   useEffect(() => {
     try {
       const saved = localStorage.getItem(`${LOCAL_STORAGE_KEY}_${layoutId}`);
       if (saved) {
-        setItems(JSON.parse(saved));
+        const parsedItems = JSON.parse(saved);
+        if (parsedItems.length > 0) {
+          setItems(parsedItems);
+        } else {
+          // No saved items, use seed data
+          setItems(seedItems);
+          localStorage.setItem(`${LOCAL_STORAGE_KEY}_${layoutId}`, JSON.stringify(seedItems));
+        }
+      } else {
+        // No localStorage data, use seed data
+        setItems(seedItems);
+        localStorage.setItem(`${LOCAL_STORAGE_KEY}_${layoutId}`, JSON.stringify(seedItems));
       }
     } catch (err) {
       console.error('Failed to load from localStorage:', err);
+      // On error, use seed data
+      setItems(seedItems);
     }
     setIsLoaded(true);
   }, [layoutId]);
