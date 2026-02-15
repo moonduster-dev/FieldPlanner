@@ -3,6 +3,7 @@ import LibrarySection from './LibrarySection';
 import CoachLibrary from './CoachLibrary';
 import AssetLibrary from './AssetLibrary';
 import StationLibrary from './StationLibrary';
+import EquipmentLibrary from './EquipmentLibrary';
 import NoteLibrary from './NoteLibrary';
 
 /**
@@ -24,6 +25,10 @@ const Sidebar = ({
   stationTemplates = [],
   onDeleteTemplate,
   onEditTemplate,
+  onCreateEquipment,
+  equipmentTemplates = [],
+  onDeleteEquipmentTemplate,
+  onEditEquipmentTemplate,
   onCreateNote,
   isSyncing = false,
   syncError = null
@@ -126,6 +131,16 @@ const Sidebar = ({
         {/* Notes Section */}
         <LibrarySection title="Notes" defaultOpen={true}>
           <NoteLibrary onCreateNote={onCreateNote} />
+        </LibrarySection>
+
+        {/* Equipment Section */}
+        <LibrarySection title="Equipment" defaultOpen={true}>
+          <EquipmentLibrary
+            onCreateEquipment={onCreateEquipment}
+            templates={equipmentTemplates}
+            onDeleteTemplate={onDeleteEquipmentTemplate}
+            onEditTemplate={onEditEquipmentTemplate}
+          />
         </LibrarySection>
 
         <LibrarySection title="Coaches" defaultOpen={true}>

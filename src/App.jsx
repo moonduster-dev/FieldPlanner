@@ -5,11 +5,13 @@ import FieldCanvas from './components/canvas/FieldCanvas';
 import LabelModal from './components/modals/LabelModal';
 import ExportModal from './components/modals/ExportModal';
 import StationModal from './components/modals/StationModal';
+import EquipmentModal from './components/modals/EquipmentModal';
 import NoteModal from './components/modals/NoteModal';
 import ContextMenu from './components/ui/ContextMenu';
 import { useFirestoreSync } from './hooks/useFirestoreSync';
 import { useFirestoreSettings } from './hooks/useFirestoreSettings';
 import { useStationTemplates } from './hooks/useStationTemplates';
+import { useEquipmentTemplates } from './hooks/useEquipmentTemplates';
 import { CANVAS } from './constants/fieldDimensions';
 
 function App() {
@@ -38,6 +40,14 @@ function App() {
     updateTemplate,
   } = useStationTemplates();
 
+  // Equipment templates
+  const {
+    templates: equipmentTemplates,
+    saveTemplate: saveEquipmentTemplate,
+    deleteTemplate: deleteEquipmentTemplate,
+    updateTemplate: updateEquipmentTemplate,
+  } = useEquipmentTemplates();
+
   // Settings with Firestore sync (logo, etc.)
   const {
     logoUrl,
@@ -53,8 +63,10 @@ function App() {
   // Modal states
   const [showExportModal, setShowExportModal] = useState(false);
   const [showStationModal, setShowStationModal] = useState(false);
+  const [showEquipmentModal, setShowEquipmentModal] = useState(false);
   const [showNoteModal, setShowNoteModal] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState(null);
+  const [editingEquipmentTemplate, setEditingEquipmentTemplate] = useState(null);
   const [editingNote, setEditingNote] = useState(null);
   const [labelModal, setLabelModal] = useState({
     isOpen: false,
@@ -162,6 +174,37 @@ function App() {
     setEditingTemplate(null);
   }, []);
 
+  // Handle equipment creation
+  const handleEquipmentSubmit = useCallback((equipmentConfig) => {
+    addItem({
+      type: 'equipment',
+      equipmentName: equipmentConfig.name,
+      widthFt: equipmentConfig.widthFt,
+      heightFt: equipmentConfig.heightFt,
+      color: equipmentConfig.color,
+      x: CANVAS.WIDTH_PX / 2,
+      y: CANVAS.HEIGHT_PX / 2,
+    });
+  }, [addItem]);
+
+  // Handle opening equipment modal for new equipment
+  const handleCreateEquipment = useCallback(() => {
+    setEditingEquipmentTemplate(null);
+    setShowEquipmentModal(true);
+  }, []);
+
+  // Handle opening equipment modal for editing template
+  const handleEditEquipmentTemplate = useCallback((template) => {
+    setEditingEquipmentTemplate(template);
+    setShowEquipmentModal(true);
+  }, []);
+
+  // Handle closing equipment modal
+  const handleEquipmentModalClose = useCallback(() => {
+    setShowEquipmentModal(false);
+    setEditingEquipmentTemplate(null);
+  }, []);
+
   // Handle opening note modal for new note
   const handleCreateNote = useCallback(() => {
     setEditingNote(null);
@@ -253,6 +296,10 @@ function App() {
         stationTemplates={stationTemplates}
         onDeleteTemplate={deleteTemplate}
         onEditTemplate={handleEditTemplate}
+        onCreateEquipment={handleCreateEquipment}
+        equipmentTemplates={equipmentTemplates}
+        onDeleteEquipmentTemplate={deleteEquipmentTemplate}
+        onEditEquipmentTemplate={handleEditEquipmentTemplate}
         onCreateNote={handleCreateNote}
         isSyncing={isSyncing || isSettingsSyncing}
         syncError={syncError}
@@ -290,6 +337,16 @@ function App() {
         onSaveTemplate={saveTemplate}
         onUpdateTemplate={updateTemplate}
         editingTemplate={editingTemplate}
+      />
+
+      {/* Equipment Modal */}
+      <EquipmentModal
+        isOpen={showEquipmentModal}
+        onSubmit={handleEquipmentSubmit}
+        onCancel={handleEquipmentModalClose}
+        onSaveTemplate={saveEquipmentTemplate}
+        onUpdateTemplate={updateEquipmentTemplate}
+        editingTemplate={editingEquipmentTemplate}
       />
 
       {/* Note Modal */}

@@ -4,6 +4,7 @@ import { ITEMS } from '../../constants/fieldDimensions';
 import SoftballInfield from './SoftballInfield';
 import FullSoftballField from './FullSoftballField';
 import Station from './Station';
+import Equipment from './Equipment';
 import Note from './Note';
 
 /**
@@ -85,7 +86,7 @@ const PlacedItem = ({
   const [image] = useImage(iconPath || '');
 
   // Check if item is rotatable
-  const isRotatable = ['softball-infield', 'full-softball-field', 'station'].includes(type);
+  const isRotatable = ['softball-infield', 'full-softball-field', 'station', 'equipment'].includes(type);
 
   // Handle double-click to rotate
   const handleDblClick = () => {
@@ -155,22 +156,13 @@ const PlacedItem = ({
         );
 
       case 'equipment':
-        const equipSize = ITEMS.EQUIPMENT_SIZE;
-        if (image) {
-          return (
-            <Image
-              image={image}
-              width={equipSize}
-              height={equipSize}
-              offsetX={equipSize / 2}
-              offsetY={equipSize / 2}
-            />
-          );
-        }
         return (
-          <Group offsetX={equipSize / 2} offsetY={equipSize / 2}>
-            <EquipmentIcon type={subType} size={equipSize} />
-          </Group>
+          <Equipment
+            name={item.equipmentName || 'Equipment'}
+            widthFt={item.widthFt || 5}
+            heightFt={item.heightFt || 5}
+            color={item.color || '#6b7280'}
+          />
         );
 
       default:
@@ -197,7 +189,7 @@ const PlacedItem = ({
       case 'coach':
         return { x: 0, y: ITEMS.COACH_SIZE / 2 + 15 };
       case 'equipment':
-        return { x: 0, y: ITEMS.EQUIPMENT_SIZE / 2 + 12 };
+        return { x: 0, y: 0 }; // Equipment has built-in label
       default:
         return { x: 0, y: 30 };
     }
@@ -205,8 +197,8 @@ const PlacedItem = ({
 
   const labelOffset = getLabelOffset();
 
-  // Station and Note don't need external label since they have built-in text
-  const showLabel = label && type !== 'station' && type !== 'note';
+  // Station, Note, and Equipment don't need external label since they have built-in text
+  const showLabel = label && type !== 'station' && type !== 'note' && type !== 'equipment';
 
   return (
     <Group
@@ -251,7 +243,9 @@ const PlacedItem = ({
       {isRotatable && (
         <Text
           x={0}
-          y={type === 'full-softball-field' ? 80 : type === 'station' ? (item.heightFt || 20) * 1.5 + 20 : 50}
+          y={type === 'full-softball-field' ? 80 :
+             type === 'station' ? (item.heightFt || 20) * 1.5 + 20 :
+             type === 'equipment' ? (item.heightFt || 5) * 1.5 + 15 : 50}
           text="Double-click to rotate"
           fontSize={10}
           fill="#666"

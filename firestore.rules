@@ -16,5 +16,10 @@ service cloud.firestore {
     match /fieldSettings/{settingsId} {
       allow read, write: if true;
     }
+
+    // Equipment templates collection
+    match /equipmentTemplates/{templateId} {
+      allow read, write: if true;
+    }
   }
 }
