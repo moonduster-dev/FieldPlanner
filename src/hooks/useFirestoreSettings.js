@@ -17,6 +17,7 @@ const LOCAL_STORAGE_KEY = 'fieldPlanner_settings';
 export const useFirestoreSettings = (settingsId = 'default') => {
   const [settings, setSettings] = useState({
     logoUrl: null,
+    logoRotation: 90, // Default 90 degrees (sideways)
   });
   const [isLoaded, setIsLoaded] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
@@ -47,6 +48,7 @@ export const useFirestoreSettings = (settingsId = 'default') => {
           const data = snapshot.data();
           const newSettings = {
             logoUrl: data.logoUrl || null,
+            logoRotation: data.logoRotation !== undefined ? data.logoRotation : 90,
           };
           setSettings(newSettings);
           // Also save to localStorage for offline access
@@ -100,13 +102,27 @@ export const useFirestoreSettings = (settingsId = 'default') => {
     saveSettings({ logoUrl });
   }, [saveSettings]);
 
+  // Update logo rotation
+  const setLogoRotation = useCallback((logoRotation) => {
+    saveSettings({ logoRotation });
+  }, [saveSettings]);
+
+  // Rotate logo by 90 degrees
+  const rotateLogo = useCallback(() => {
+    const newRotation = ((settings.logoRotation || 90) + 90) % 360;
+    saveSettings({ logoRotation: newRotation });
+  }, [settings.logoRotation, saveSettings]);
+
   return {
     settings,
     logoUrl: settings.logoUrl,
+    logoRotation: settings.logoRotation,
     isLoaded,
     isSyncing,
     error,
     setLogoUrl,
+    setLogoRotation,
+    rotateLogo,
     saveSettings,
   };
 };

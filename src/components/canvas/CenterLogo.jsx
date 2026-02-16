@@ -9,12 +9,15 @@ import {
 
 /**
  * Center logo component for the field
- * Displays uploaded logo image rotated 90 degrees (sideways) to match field orientation
+ * Displays uploaded logo image with configurable rotation
+ * Double-click to rotate 90 degrees
  *
  * @param {Object} props
  * @param {string} props.logoUrl - Data URL or path to logo image
+ * @param {number} props.rotation - Rotation angle in degrees (default 90)
+ * @param {Function} props.onRotate - Callback when logo is double-clicked to rotate
  */
-const CenterLogo = ({ logoUrl }) => {
+const CenterLogo = ({ logoUrl, rotation = 90, onRotate }) => {
   const [image] = useImage(logoUrl || '');
 
   const fieldX = feetToPixels(TRACK.TOTAL_WIDTH);
@@ -26,7 +29,14 @@ const CenterLogo = ({ logoUrl }) => {
   const centerX = fieldX + fieldWidth / 2;
   const centerY = fieldY + fieldLength / 2;
 
-  // If we have an image, display it rotated 90 degrees
+  // Handle double-click to rotate
+  const handleDblClick = () => {
+    if (onRotate) {
+      onRotate();
+    }
+  };
+
+  // If we have an image, display it with configurable rotation
   if (image) {
     // Calculate scale to fit logo within the logo area
     const scale = Math.min(
@@ -35,7 +45,10 @@ const CenterLogo = ({ logoUrl }) => {
     ) * 0.8; // 80% of max to leave some margin
 
     return (
-      <Group>
+      <Group
+        onDblClick={handleDblClick}
+        onDblTap={handleDblClick}
+      >
         <Image
           image={image}
           x={centerX}
@@ -46,8 +59,18 @@ const CenterLogo = ({ logoUrl }) => {
           offsetY={image.height / 2}
           scaleX={scale}
           scaleY={scale}
-          rotation={90} // Rotate 90 degrees for sideways display
+          rotation={rotation}
           opacity={0.9}
+        />
+        {/* Rotation hint */}
+        <Text
+          x={centerX}
+          y={centerY + logoSize / 2 + 15}
+          text="Double-click to rotate"
+          fontSize={10}
+          fill="rgba(255, 255, 255, 0.6)"
+          align="center"
+          offsetX={55}
         />
       </Group>
     );
@@ -55,7 +78,10 @@ const CenterLogo = ({ logoUrl }) => {
 
   // Placeholder when no logo is uploaded
   return (
-    <Group>
+    <Group
+      onDblClick={handleDblClick}
+      onDblTap={handleDblClick}
+    >
       {/* Logo background circle */}
       <Circle
         x={centerX}
@@ -75,7 +101,7 @@ const CenterLogo = ({ logoUrl }) => {
         fontStyle="bold"
         offsetX={45}
         offsetY={18}
-        rotation={90}
+        rotation={rotation}
       />
     </Group>
   );

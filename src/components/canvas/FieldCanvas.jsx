@@ -18,9 +18,11 @@ import { CANVAS } from '../../constants/fieldDimensions';
 const FieldCanvas = forwardRef(({
   items,
   logoUrl,
+  logoRotation,
   onItemMove,
   onItemAdd,
   onItemRotate,
+  onLogoRotate,
   onContextMenu,
   onLongPress,
   containerRef,
@@ -238,7 +240,7 @@ const FieldCanvas = forwardRef(({
       >
         <Layer>
           {/* Background: field and track */}
-          <FieldBackground logoUrl={logoUrl} />
+          <FieldBackground logoUrl={logoUrl} logoRotation={logoRotation} onLogoRotate={onLogoRotate} />
 
           {/* Placed items */}
           {items.map((item) => (

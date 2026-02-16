@@ -51,7 +51,9 @@ function App() {
   // Settings with Firestore sync (logo, etc.)
   const {
     logoUrl,
+    logoRotation,
     setLogoUrl,
+    rotateLogo,
     isSyncing: isSettingsSyncing,
   } = useFirestoreSettings('default');
 
@@ -311,9 +313,11 @@ function App() {
           ref={canvasRef}
           items={items}
           logoUrl={logoUrl}
+          logoRotation={logoRotation}
           onItemMove={moveItem}
           onItemAdd={handleItemAdd}
           onItemRotate={handleItemRotate}
+          onLogoRotate={rotateLogo}
           onContextMenu={handleContextMenu}
           onLongPress={handleLongPress}
           containerRef={containerRef}

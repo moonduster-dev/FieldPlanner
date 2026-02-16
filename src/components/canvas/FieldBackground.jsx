@@ -296,13 +296,17 @@ const FootballField = () => {
  *
  * @param {Object} props
  * @param {string} props.logoUrl - URL or data URL for center logo image
+ * @param {number} props.logoRotation - Logo rotation angle in degrees
+ * @param {Function} props.onLogoRotate - Callback when logo is double-clicked
  */
-const FieldBackground = ({ logoUrl }) => {
+const FieldBackground = ({ logoUrl, logoRotation = 90, onLogoRotate }) => {
   return (
-    <Group listening={false}>
-      <RunningTrack />
-      <FootballField />
-      <CenterLogo logoUrl={logoUrl} />
+    <Group>
+      <Group listening={false}>
+        <RunningTrack />
+        <FootballField />
+      </Group>
+      <CenterLogo logoUrl={logoUrl} rotation={logoRotation} onRotate={onLogoRotate} />
     </Group>
   );
 };
