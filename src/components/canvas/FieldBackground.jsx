@@ -2,6 +2,7 @@ import { Group, Rect, Line, Arc, Text, Circle } from 'react-konva';
 import {
   FOOTBALL,
   TRACK,
+  BLEACHERS,
   feetToPixels,
 } from '../../constants/fieldDimensions';
 import CenterLogo from './CenterLogo';
@@ -292,7 +293,117 @@ const FootballField = () => {
 };
 
 /**
- * Complete field background with track, field, and logo
+ * Draw bleacher stands on the right side of the field
+ */
+const Bleachers = () => {
+  const bleacherColor = '#6B7280'; // Gray metal
+  const bleacherDarkColor = '#4B5563'; // Darker gray for depth
+  const supportColor = '#374151'; // Dark gray for supports
+
+  const fieldWidth = feetToPixels(FOOTBALL.WIDTH);
+  const fieldLength = feetToPixels(FOOTBALL.TOTAL_LENGTH);
+  const trackWidth = feetToPixels(TRACK.TOTAL_WIDTH);
+  const bleacherWidth = feetToPixels(BLEACHERS.WIDTH);
+  const bleacherMargin = feetToPixels(BLEACHERS.MARGIN);
+  const topMargin = feetToPixels(BLEACHERS.TOP_MARGIN);
+  const bottomMargin = feetToPixels(BLEACHERS.BOTTOM_MARGIN);
+  const rowCount = BLEACHERS.ROW_COUNT;
+
+  // Bleacher position (right side of track)
+  const bleacherX = trackWidth * 2 + fieldWidth + bleacherMargin;
+  const bleacherY = topMargin;
+  const bleacherHeight = fieldLength + trackWidth * 2 - topMargin - bottomMargin;
+  const rowHeight = bleacherHeight / rowCount;
+  const rowDepth = bleacherWidth / rowCount;
+
+  const rows = [];
+  const supports = [];
+
+  // Draw bleacher rows (stepped appearance)
+  for (let i = 0; i < rowCount; i++) {
+    const rowX = bleacherX + i * rowDepth;
+    const rowY = bleacherY;
+    const rowW = rowDepth - 1; // Small gap between rows
+
+    // Main seating surface
+    rows.push(
+      <Rect
+        key={`row-${i}`}
+        x={rowX}
+        y={rowY}
+        width={rowW}
+        height={bleacherHeight}
+        fill={i % 2 === 0 ? bleacherColor : bleacherDarkColor}
+      />
+    );
+
+    // Row line (edge of seat)
+    rows.push(
+      <Line
+        key={`row-line-${i}`}
+        points={[rowX, rowY, rowX, rowY + bleacherHeight]}
+        stroke="#9CA3AF"
+        strokeWidth={1}
+      />
+    );
+  }
+
+  // Draw vertical support columns
+  const supportCount = 6;
+  const supportSpacing = bleacherHeight / (supportCount - 1);
+  for (let i = 0; i < supportCount; i++) {
+    const y = bleacherY + i * supportSpacing;
+    supports.push(
+      <Line
+        key={`support-${i}`}
+        points={[bleacherX, y, bleacherX + bleacherWidth, y]}
+        stroke={supportColor}
+        strokeWidth={3}
+      />
+    );
+  }
+
+  // Outer border
+  const border = (
+    <Rect
+      x={bleacherX}
+      y={bleacherY}
+      width={bleacherWidth}
+      height={bleacherHeight}
+      stroke={supportColor}
+      strokeWidth={3}
+      fill="transparent"
+    />
+  );
+
+  // "VISITORS" or "HOME" text
+  const labelText = (
+    <Text
+      x={bleacherX + bleacherWidth / 2}
+      y={bleacherY + bleacherHeight / 2}
+      text="HOME"
+      fontSize={28}
+      fill="#FFFFFF"
+      fontStyle="bold"
+      rotation={90}
+      offsetX={30}
+      offsetY={14}
+      opacity={0.6}
+    />
+  );
+
+  return (
+    <Group>
+      {rows}
+      {supports}
+      {border}
+      {labelText}
+    </Group>
+  );
+};
+
+/**
+ * Complete field background with track, field, logo, and bleachers
  *
  * @param {Object} props
  * @param {string} props.logoUrl - URL or data URL for center logo image
@@ -305,6 +416,7 @@ const FieldBackground = ({ logoUrl, logoRotation = 90, onLogoRotate }) => {
       <Group listening={false}>
         <RunningTrack />
         <FootballField />
+        <Bleachers />
       </Group>
       <CenterLogo logoUrl={logoUrl} rotation={logoRotation} onRotate={onLogoRotate} />
     </Group>

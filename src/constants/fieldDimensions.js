@@ -28,18 +28,27 @@ export const TRACK = {
   TOTAL_WIDTH: 42,
 };
 
+// Bleacher/Stands Dimensions (in feet)
+export const BLEACHERS = {
+  WIDTH: 40, // depth of bleacher section
+  MARGIN: 10, // gap between track and bleachers
+  TOP_MARGIN: 60, // gap from top
+  BOTTOM_MARGIN: 60, // gap from bottom
+  ROW_COUNT: 8, // number of rows
+};
+
 // Canvas Dimensions (in feet, then converted to pixels)
 export const CANVAS = {
-  // Total width: field width + track on both sides
-  WIDTH_FT: FOOTBALL.WIDTH + TRACK.TOTAL_WIDTH * 2, // 244 ft
+  // Total width: field width + track on both sides + bleachers on right
+  WIDTH_FT: FOOTBALL.WIDTH + TRACK.TOTAL_WIDTH * 2 + BLEACHERS.WIDTH + BLEACHERS.MARGIN, // 294 ft
   // Total height: field length + track on both ends
   HEIGHT_FT: FOOTBALL.TOTAL_LENGTH + TRACK.TOTAL_WIDTH * 2, // 444 ft
   // Pixel dimensions
   get WIDTH_PX() {
-    return this.WIDTH_FT * SCALE; // 732 px
+    return this.WIDTH_FT * SCALE;
   },
   get HEIGHT_PX() {
-    return this.HEIGHT_FT * SCALE; // 1332 px
+    return this.HEIGHT_FT * SCALE;
   },
 };
 
